@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { api } from "../api/client";
 import { OperationForm } from "./OperationForm";
 
@@ -68,7 +68,7 @@ export function ThreadTree({ threadId, isAuthenticated }: ThreadTreeProps) {
         return map;
     }, [data]);
 
-    function renderChildren(parentId: string | null, depth: number): JSX.Element | null {
+    function renderChildren(parentId: string | null, depth: number): ReactNode {
         const nodes = treeByParent.get(parentId);
         if (!nodes || nodes.length === 0) return null;
 
