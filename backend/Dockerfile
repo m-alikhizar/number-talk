@@ -1,21 +1,20 @@
-# backend/Dockerfile
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies
+# Install only production + Prisma deps (no dev, no optional like fsevents)
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --omit=dev --omit=optional
 
-# Copy source + Prisma schema
-COPY tsconfig.json ./
+# Copy Prisma schema & source
 COPY prisma ./prisma
+COPY tsconfig.json ./
 COPY src ./src
 
-# Generate Prisma client and build TS -> JS
+# Generate Prisma client and build TS → JS
 RUN npx prisma generate && npm run build
 
 EXPOSE 4000
 
-# On container start: run migrations (safe for SQLite) and then start the server
+# Run migrations then start API
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
