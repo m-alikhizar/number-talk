@@ -1,0 +1,48 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  threads    Thread[]
+  operations OperationNode[]
+}
+
+model Thread {
+  id        String          @id @default(uuid())
+  value     Float
+  createdAt DateTime        @default(now())
+
+  authorId String
+  author   User            @relation(fields: [authorId], references: [id])
+
+  nodes OperationNode[]
+}
+
+model OperationNode {
+  id           String         @id @default(uuid())
+  threadId     String
+  thread       Thread         @relation(fields: [threadId], references: [id])
+
+  parentId     String?
+  parent       OperationNode? @relation("NodeChildren", fields: [parentId], references: [id])
+  children     OperationNode[]@relation("NodeChildren")
+
+  operation    String          // instead of enum
+  rightOperand Float
+  result       Float
+
+  createdAt    DateTime @default(now())
+
+  authorId String
+  author   User @relation(fields: [authorId], references: [id])
+}

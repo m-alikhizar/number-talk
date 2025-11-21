@@ -1,13 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+const databaseUrl = process.env.DATABASE_URL;
 
-export const prisma =
-    globalForPrisma.prisma ??
-    new PrismaClient({
-        log: ["error", "warn"],
-    });
-
-if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = prisma;
+if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not defined");
 }
+
+export const prisma = new PrismaClient({
+    datasourceUrl: databaseUrl,
+});

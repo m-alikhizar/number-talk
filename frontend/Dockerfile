@@ -1,0 +1,15 @@
+# frontend/Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY vite.config.* tsconfig.* index.html ./
+COPY src ./src
+
+EXPOSE 5173
+
+# Run Vite dev server in the container
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
